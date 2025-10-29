@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Post } from '@/types/blog';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import EmptyState from '@/components/EmptyState';
 
 export default function MyPostsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -32,7 +34,7 @@ export default function MyPostsPage() {
   }
 
   async function handleDelete(postId: number) {
-    if (!confirm('Are you sure you want to delete this post?')) {
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
       return;
     }
 
@@ -53,96 +55,106 @@ export default function MyPostsPage() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-green-100 animate-pulse"
-          >
-            <div className="h-4 bg-green-200 rounded w-3/4 mb-4"></div>
-            <div className="space-y-2">
-              <div className="h-3 bg-green-100 rounded"></div>
-              <div className="h-3 bg-green-100 rounded w-5/6"></div>
-            </div>
+      <div>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-green-800">My Posts</h1>
+            <p className="text-green-600 mt-1">Manage your published articles</p>
           </div>
-        ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <LoadingSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-green-800 mb-2">My Posts</h1>
-          <p className="text-green-600">Manage your published articles</p>
+          <h1 className="text-3xl font-bold text-green-900 mb-2">My Posts</h1>
+          <p className="text-green-600">
+            You have {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+          </p>
         </div>
         <Link
           href="/blog/create"
-          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-md hover:shadow-lg"
         >
-          Create New Post
+          + Create New Post
         </Link>
       </div>
 
+      {/* Posts Grid or Empty State */}
       {posts.length === 0 ? (
-        <div className="bg-white/60 backdrop-blur-sm rounded-lg p-12 border border-green-100 text-center">
-          <p className="text-green-700 text-lg mb-4">
-            You haven't created any posts yet.
-          </p>
-          <Link
-            href="/blog/create"
-            className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Create Your First Post
-          </Link>
-        </div>
+        <EmptyState
+          title="No Posts Yet"
+          description="Start sharing your knowledge about plants and animals with the community!"
+          actionLabel="Create Your First Post"
+          actionHref="/blog/create"
+          icon="✍️"
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {posts.map((post) => (
             <div
               key={post.id}
-              className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-green-100"
+              className="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-green-200/50 hover:border-green-300 transition-all shadow-sm hover:shadow-md"
             >
-              <div className="flex items-start justify-between mb-3">
-                <h2 className="text-lg font-semibold text-green-900 flex-1">
-                  {post.title}
-                </h2>
-                <span className="text-sm text-green-600 ml-2 flex-shrink-0">
-                  ❤️ {post.likes}
-                </span>
+              {/* Post Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <Link
+                    href={`/blog/${post.id}`}
+                    className="block group"
+                  >
+                    <h2 className="text-xl font-bold text-green-900 group-hover:text-green-700 transition-colors mb-2 line-clamp-2">
+                      {post.title}
+                    </h2>
+                  </Link>
+                  <p className="text-sm text-green-700/80 line-clamp-3 mb-4">
+                    {post.excerpt || post.content.substring(0, 150) + '...'}
+                  </p>
+                </div>
               </div>
 
-              <p className="text-sm text-green-700 mb-4 line-clamp-3">
-                {post.excerpt || post.content.substring(0, 150) + '...'}
-              </p>
-
-              <div className="flex items-center justify-between text-xs text-green-500 mb-4">
-                <span>
+              {/* Stats */}
+              <div className="flex items-center gap-4 mb-4 pb-4 border-b border-green-100">
+                <div className="flex items-center gap-1 text-sm">
+                  <span className="text-lg">❤️</span>
+                  <span className="font-semibold text-green-700">{post.likes}</span>
+                  <span className="text-green-500">likes</span>
+                </div>
+                <div className="text-sm text-green-500">
                   {new Date(post.created_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',
                   })}
-                </span>
+                </div>
               </div>
 
+              {/* Actions */}
               <div className="flex gap-2">
                 <Link
                   href={`/blog/${post.id}`}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors"
+                  className="flex-1 px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
                 >
                   View
                 </Link>
                 <Link
                   href={`/blog/edit/${post.id}`}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
                 >
                   Edit
                 </Link>
                 <button
                   onClick={() => handleDelete(post.id)}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm"
                 >
                   Delete
                 </button>

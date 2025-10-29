@@ -38,6 +38,7 @@ export default function Navigation() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       setUser(null);
+      setShowDropdown(false);
       router.push('/');
       router.refresh();
     } catch (error) {
@@ -59,24 +60,25 @@ export default function Navigation() {
           <div className="flex items-center space-x-6">
             <Link 
               href="/" 
-              className="text-green-700 hover:text-green-900 transition-colors"
+              className="text-green-700 hover:text-green-900 transition-colors font-medium"
             >
               Home
-            </Link>
-            <Link 
-              href="/blog" 
-              className="text-green-700 hover:text-green-900 transition-colors"
-            >
-              Blog
             </Link>
 
             {!loading && (
               <>
                 {user ? (
                   <>
+                    <Link 
+                      href="/blog/my-posts" 
+                      className="text-green-700 hover:text-green-900 transition-colors font-medium"
+                    >
+                      My Posts
+                    </Link>
+                    
                     <Link
                       href="/blog/create"
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
                     >
                       Create Post
                     </Link>
@@ -86,39 +88,42 @@ export default function Navigation() {
                         onClick={() => setShowDropdown(!showDropdown)}
                         className="flex items-center space-x-2 text-green-700 hover:text-green-900 transition-colors"
                       >
-                        <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-semibold">
+                        <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-semibold text-sm">
                           {user.username.charAt(0).toUpperCase()}
                         </div>
-                        <span>{user.username}</span>
+                        <span className="hidden md:inline font-medium">{user.username}</span>
                       </button>
 
                       {showDropdown && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-green-100 py-2">
-                          <Link
-                            href="/blog/my-posts"
-                            className="block px-4 py-2 text-green-700 hover:bg-green-50"
+                        <>
+                          <div 
+                            className="fixed inset-0 z-10" 
                             onClick={() => setShowDropdown(false)}
-                          >
-                            My Posts
-                          </Link>
-                          <Link
-                            href="/settings"
-                            className="block px-4 py-2 text-green-700 hover:bg-green-50"
-                            onClick={() => setShowDropdown(false)}
-                          >
-                            Settings
-                          </Link>
-                          <hr className="my-2 border-green-100" />
-                          <button
-                            onClick={() => {
-                              setShowDropdown(false);
-                              handleLogout();
-                            }}
-                            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
-                          >
-                            Logout
-                          </button>
-                        </div>
+                          />
+                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-green-100 py-2 z-20">
+                            <Link
+                              href="/blog/my-posts"
+                              className="block px-4 py-2 text-green-700 hover:bg-green-50 font-medium"
+                              onClick={() => setShowDropdown(false)}
+                            >
+                              My Posts
+                            </Link>
+                            <Link
+                              href="/settings"
+                              className="block px-4 py-2 text-green-700 hover:bg-green-50 font-medium"
+                              onClick={() => setShowDropdown(false)}
+                            >
+                              Settings
+                            </Link>
+                            <hr className="my-2 border-green-100" />
+                            <button
+                              onClick={handleLogout}
+                              className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-medium"
+                            >
+                              Logout
+                            </button>
+                          </div>
+                        </>
                       )}
                     </div>
                   </>
@@ -126,13 +131,13 @@ export default function Navigation() {
                   <>
                     <Link
                       href="/login"
-                      className="text-green-700 hover:text-green-900 transition-colors"
+                      className="text-green-700 hover:text-green-900 transition-colors font-medium"
                     >
                       Sign In
                     </Link>
                     <Link
                       href="/register"
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
                     >
                       Sign Up
                     </Link>
