@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Navigation from '@/components/Navigation';
+import Sidebar from '@/components/Sidebar';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +29,35 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-beige-50 to-green-100">
+      <Navigation />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
+          {/* Main Content Area */}
+          <main className="flex-1">
+            {children}
+          </main>
+          
+          {/* Sidebar */}
+          <Sidebar />
+        </div>
+      </div>
+    </div>
       </body>
     </html>
   );
 }
+
+// app/blog/layout.tsx
+
+
+//export default function BlogLayout({
+ // children,
+//}: {
+  //children: React.ReactNode;
+//}) {
+  //return (
+    
+ // );
+//}
