@@ -47,15 +47,6 @@ export default function RootLayout({
               </div>
             </div>
             
-            {/* Footer */}
-            <footer className="bg-surface border-t border-default mt-16">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="text-center text-muted text-sm">
-                  <p className="mb-2">🌿 Flora & Fauna - Celebrating Nature 🦋</p>
-                  <p>Made with 💚 for nature lovers</p>
-                </div>
-              </div>
-            </footer>
           </div>
         </PostsProvider>
       </body>

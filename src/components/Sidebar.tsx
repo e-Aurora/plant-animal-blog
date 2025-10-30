@@ -64,7 +64,7 @@ export default function Sidebar() {
       {/* Recent Posts */}
       <Card>
         <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          <span>📝</span>
+          
           Recent Posts
         </h2>
         <div className="space-y-4">
@@ -102,7 +102,7 @@ export default function Sidebar() {
         <div className="absolute top-0 right-0 w-20 h-20 bg-pink-200 rounded-full opacity-20 blur-2xl"></div>
         
         <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2 relative">
-          <span>🔥</span>
+          
           Hot Posts
         </h2>
         <div className="space-y-4 relative">

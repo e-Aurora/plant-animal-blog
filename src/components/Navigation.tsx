@@ -54,9 +54,8 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <span className="text-2xl transition-transform group-hover:scale-110">🌿</span>
             <span className="text-xl font-semibold text-primary">
-              Flora & Fauna
+              Plants & Animals
             </span>
           </Link>
           
