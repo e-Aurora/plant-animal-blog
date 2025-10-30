@@ -1,3 +1,4 @@
+// src/contexts/ThemeContext.tsx
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -25,9 +26,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       setThemeState(savedTheme);
       document.documentElement.setAttribute('data-theme', savedTheme);
     } else {
-      // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const initialTheme = prefersDark ? 'dark' : 'light';
+      // Default to light theme (dark theme not fully ready)
+      const initialTheme = 'light';
       setThemeState(initialTheme);
       document.documentElement.setAttribute('data-theme', initialTheme);
     }
@@ -44,7 +44,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(newTheme);
   };
 
-  // Prevent flash of unstyled content — do not render children until mounted
+  // Prevent flash of unstyled content
   if (!mounted) {
     return null;
   }

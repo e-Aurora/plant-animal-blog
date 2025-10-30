@@ -6,7 +6,7 @@ export default function HeroSection() {
   return (
     <div className="relative overflow-hidden rounded-2xl p-8 md:p-12 mb-8 shadow-lg">
       {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-pink-50 to-amber-50 dark:from-green-900 dark:via-pink-900 dark:to-amber-900 opacity-70"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-pink-50 to-amber-50 opacity-70"></div>
       
       {/* Pattern Overlay */}
       <div className="absolute inset-0 opacity-10" style={{

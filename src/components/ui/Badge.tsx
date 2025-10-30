@@ -1,6 +1,5 @@
 
 // src/components/ui/Badge.tsx
-
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 interface BadgeProps {
   children: ReactNode;
@@ -10,8 +9,8 @@ interface BadgeProps {
 
 export function Badge({ children, variant = 'primary', size = 'md' }: BadgeProps) {
   const variantClasses = {
-    primary: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-    secondary: 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300',
+    primary: 'bg-green-100 text-green-700',
+    secondary: 'bg-pink-100 text-pink-700',
     success: 'bg-green-100 text-green-700',
     warning: 'bg-amber-100 text-amber-700',
     error: 'bg-red-100 text-red-700'

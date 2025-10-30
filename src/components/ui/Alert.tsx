@@ -31,4 +31,5 @@ export function Alert({ type = 'info', children, onClose }: AlertProps) {
     </div>
   );
 }
+
 export * from './Alert';

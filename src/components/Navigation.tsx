@@ -4,7 +4,6 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 
@@ -18,7 +17,6 @@ export default function Navigation() {
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     fetchUser();
@@ -56,9 +54,9 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <span className="text-2xl transition-transform group-hover:scale-110"></span>
+            <span className="text-2xl transition-transform group-hover:scale-110">🌿</span>
             <span className="text-xl font-semibold text-primary">
-              Plants & Animals
+              Flora & Fauna
             </span>
           </Link>
           
@@ -70,15 +68,6 @@ export default function Navigation() {
             >
               Home
             </Link>
-
-            {/* Theme Toggle 
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-surface-elevated transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>*/}
 
             {!loading && (
               <>
@@ -135,7 +124,7 @@ export default function Navigation() {
                             <hr className="my-2 border-default" />
                             <button
                               onClick={handleLogout}
-                              className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium"
+                              className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors font-medium"
                             >
                               Logout
                             </button>

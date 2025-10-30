@@ -99,7 +99,7 @@ export default function Sidebar() {
       {/* Hot Posts */}
       <Card className="relative overflow-hidden">
         {/* Pink accent */}
-        <div className="absolute top-0 right-0 w-20 h-20 bg-pink-200 dark:bg-pink-900 rounded-full opacity-20 blur-2xl"></div>
+        <div className="absolute top-0 right-0 w-20 h-20 bg-pink-200 rounded-full opacity-20 blur-2xl"></div>
         
         <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2 relative">
           <span>🔥</span>
@@ -113,7 +113,7 @@ export default function Sidebar() {
               className="block group"
             >
               <div className="flex items-start gap-2">
-                <span className="text-lg font-bold text-pink-500 dark:text-pink-400 mt-0.5">
+                <span className="text-lg font-bold text-pink-500 mt-0.5">
                   #{index + 1}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -141,16 +141,7 @@ export default function Sidebar() {
         </div>
       </Card>
 
-      {/* Fun Fact Card 
-      <Card className="bg-gradient-to-br from-green-50 to-pink-50 dark:from-green-900/20 dark:to-pink-900/20 border-2 border-pink-200 dark:border-pink-800">
-        <div className="text-center">
-          <span className="text-4xl mb-2 block">🌺</span>
-          <p className="text-sm text-secondary font-medium italic">
-            "In every walk with nature, one receives far more than he seeks."
-          </p>
-          <p className="text-xs text-muted mt-2">— John Muir</p>
-        </div>
-      </Card>*/}
+      
     </aside>
   );
 }

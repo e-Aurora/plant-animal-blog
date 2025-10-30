@@ -15,9 +15,9 @@ export default function PostCard({ post }: PostCardProps) {
       <Card hover className="h-full flex flex-col">
         {/* Header with icon and likes */}
         <div className="flex items-start justify-between mb-4">
-          {/*<div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 dark:from-green-500 dark:to-green-700 rounded-lg flex items-center justify-center text-2xl shadow-sm">
+          <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center text-2xl shadow-sm">
             🌿
-          </div>*/}
+          </div>
           <Badge variant="secondary" size="sm">
             <span className="mr-1">❤️</span>
             {post.likes}
