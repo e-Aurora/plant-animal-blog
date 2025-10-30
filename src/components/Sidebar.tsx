@@ -1,57 +1,70 @@
-// components/Sidebar.tsx
+// src/components/Sidebar.tsx
 'use client';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Post } from '@/types/blog';
+import { usePostsRefresh } from '@/contexts/PostsContext';
+import { Card } from '@/components/ui/Card';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { Badge } from '@/components/ui/Badge';
 
 export default function Sidebar() {
   const [recentPosts, setRecentPosts] = useState<Post[]>([]);
   const [hotPosts, setHotPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshTrigger } = usePostsRefresh();
 
   useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const [recentRes, hotRes] = await Promise.all([
-          fetch('/api/posts/recent'),
-          fetch('/api/posts/hot'),
-        ]);
-
-        const recent = await recentRes.json();
-        const hot = await hotRes.json();
-
-        setRecentPosts(recent);
-        setHotPosts(hot);
-      } catch (error) {
-        console.error('Error fetching sidebar posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchPosts();
-  }, []);
+  }, [refreshTrigger]);
+
+  async function fetchPosts() {
+    try {
+      const [recentRes, hotRes] = await Promise.all([
+        fetch('/api/posts/recent'),
+        fetch('/api/posts/hot'),
+      ]);
+
+      const recent = await recentRes.json();
+      const hot = await hotRes.json();
+
+      setRecentPosts(recent);
+      setHotPosts(hot);
+    } catch (error) {
+      console.error('Error fetching sidebar posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (loading) {
     return (
-      <aside className="w-80 space-y-8">
-        <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-green-100">
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-green-200 rounded w-1/2"></div>
-            <div className="h-3 bg-green-100 rounded"></div>
-            <div className="h-3 bg-green-100 rounded w-5/6"></div>
+      <aside className="w-80 space-y-6">
+        <Card>
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4" />
+            <Skeleton className="h-4 w-5/6" />
           </div>
-        </div>
+        </Card>
+        <Card>
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4" />
+            <Skeleton className="h-4 w-5/6" />
+          </div>
+        </Card>
       </aside>
     );
   }
 
   return (
-    <aside className="w-80 space-y-8">
+    <aside className="w-80 space-y-6 hidden lg:block">
       {/* Recent Posts */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-green-100">
-        <h2 className="text-lg font-semibold text-green-800 mb-4">
+      <Card>
+        <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+          <span>📝</span>
           Recent Posts
         </h2>
         <div className="space-y-4">
@@ -61,62 +74,83 @@ export default function Sidebar() {
               href={`/blog/${post.id}`}
               className="block group"
             >
-              <h3 className="text-sm font-medium text-green-900 group-hover:text-green-700 transition-colors">
+              <h3 className="text-sm font-medium text-secondary group-hover:text-primary transition-colors line-clamp-2">
                 {post.title}
               </h3>
-              <p className="text-xs text-green-600 mt-1 line-clamp-2">
+              <p className="text-xs text-tertiary mt-1 line-clamp-2">
                 {post.excerpt}
               </p>
               <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-green-500">
+                <span className="text-xs text-muted">
                   {new Date(post.created_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                   })}
                 </span>
-                <span className="text-xs text-green-600">
+                <Badge variant="secondary" size="sm">
                   ❤️ {post.likes}
-                </span>
+                </Badge>
               </div>
             </Link>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Hot Posts */}
-      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 border border-green-100">
-        <h2 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
-          <span className="mr-2">🔥</span>
+      <Card className="relative overflow-hidden">
+        {/* Pink accent */}
+        <div className="absolute top-0 right-0 w-20 h-20 bg-pink-200 dark:bg-pink-900 rounded-full opacity-20 blur-2xl"></div>
+        
+        <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2 relative">
+          <span>🔥</span>
           Hot Posts
         </h2>
-        <div className="space-y-4">
-          {hotPosts.map((post) => (
+        <div className="space-y-4 relative">
+          {hotPosts.map((post, index) => (
             <Link
               key={post.id}
               href={`/blog/${post.id}`}
               className="block group"
             >
-              <h3 className="text-sm font-medium text-green-900 group-hover:text-green-700 transition-colors">
-                {post.title}
-              </h3>
-              <p className="text-xs text-green-600 mt-1 line-clamp-2">
-                {post.excerpt}
-              </p>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-green-500">
-                  {new Date(post.created_at).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+              <div className="flex items-start gap-2">
+                <span className="text-lg font-bold text-pink-500 dark:text-pink-400 mt-0.5">
+                  #{index + 1}
                 </span>
-                <span className="text-xs text-green-600 font-medium">
-                  ❤️ {post.likes}
-                </span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-medium text-secondary group-hover:text-primary transition-colors line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-tertiary mt-1 line-clamp-2">
+                    {post.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-muted">
+                      {new Date(post.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </span>
+                    <Badge variant="primary" size="sm">
+                      ❤️ {post.likes}
+                    </Badge>
+                  </div>
+                </div>
               </div>
             </Link>
           ))}
         </div>
-      </div>
+      </Card>
+
+      {/* Fun Fact Card 
+      <Card className="bg-gradient-to-br from-green-50 to-pink-50 dark:from-green-900/20 dark:to-pink-900/20 border-2 border-pink-200 dark:border-pink-800">
+        <div className="text-center">
+          <span className="text-4xl mb-2 block">🌺</span>
+          <p className="text-sm text-secondary font-medium italic">
+            "In every walk with nature, one receives far more than he seeks."
+          </p>
+          <p className="text-xs text-muted mt-2">— John Muir</p>
+        </div>
+      </Card>*/}
     </aside>
   );
 }

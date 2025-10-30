@@ -1,6 +1,9 @@
 // src/components/PostCard.tsx
 import Link from 'next/link';
 import { Post } from '@/types/blog';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Avatar } from '@/components/ui/Avatar';
 
 interface PostCardProps {
   post: Post;
@@ -8,50 +11,45 @@ interface PostCardProps {
 
 export default function PostCard({ post }: PostCardProps) {
   return (
-    <Link
-      href={`/blog/${post.id}`}
-      className="group bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-green-200/50 hover:border-green-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-    >
-      {/* Header with emoji and likes */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center text-2xl">
-          🌿
+    <Link href={`/blog/${post.id}`}>
+      <Card hover className="h-full flex flex-col">
+        {/* Header with icon and likes */}
+        <div className="flex items-start justify-between mb-4">
+          {/*<div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 dark:from-green-500 dark:to-green-700 rounded-lg flex items-center justify-center text-2xl shadow-sm">
+            🌿
+          </div>*/}
+          <Badge variant="secondary" size="sm">
+            <span className="mr-1">❤️</span>
+            {post.likes}
+          </Badge>
         </div>
-        <div className="flex items-center gap-1 px-3 py-1 bg-green-50 rounded-full">
-          <span className="text-lg">❤️</span>
-          <span className="text-sm font-semibold text-green-700">{post.likes}</span>
-        </div>
-      </div>
 
-      {/* Title */}
-      <h2 className="text-xl font-bold text-green-900 mb-3 group-hover:text-green-700 transition-colors line-clamp-2">
-        {post.title}
-      </h2>
+        {/* Title */}
+        <h2 className="text-xl font-bold text-primary mb-3 group-hover:text-secondary transition-colors line-clamp-2">
+          {post.title}
+        </h2>
 
-      {/* Excerpt */}
-      <p className="text-sm text-green-700/80 mb-4 line-clamp-3 leading-relaxed">
-        {post.excerpt || post.content.substring(0, 150) + '...'}
-      </p>
+        {/* Excerpt */}
+        <p className="text-sm text-tertiary mb-4 line-clamp-3 leading-relaxed flex-grow">
+          {post.excerpt || post.content.substring(0, 150) + '...'}
+        </p>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-green-100">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-            <span className="text-white text-xs font-semibold">
-              {post.username?.charAt(0).toUpperCase() || 'A'}
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-4 border-t border-default">
+          <div className="flex items-center gap-2">
+            <Avatar name={post.username || 'Anonymous'} size="sm" />
+            <span className="text-sm text-secondary font-medium">
+              {post.username || 'Anonymous'}
             </span>
           </div>
-          <span className="text-sm text-green-700 font-medium">
-            {post.username || 'Anonymous'}
+          <span className="text-xs text-muted">
+            {new Date(post.created_at).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            })}
           </span>
         </div>
-        <span className="text-xs text-green-500">
-          {new Date(post.created_at).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          })}
-        </span>
-      </div>
+      </Card>
     </Link>
   );
 }

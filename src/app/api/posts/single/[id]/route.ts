@@ -5,12 +5,14 @@ import { getSession } from '@/lib/auth';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const session = await getSession();
     const postId = parseInt(params.id);
 
+    // First check if post exists
     const post = db.prepare(`
       SELECT 
         p.id,
@@ -32,11 +34,19 @@ export async function GET(
       );
     }
 
+    // Check if user is authenticated
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
     // Check if user owns the post
     const postData = post as any;
-    if (!session || postData.user_id !== session.id) {
+    if (postData.user_id !== session.id) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'You do not have permission to edit this post' },
         { status: 403 }
       );
     }

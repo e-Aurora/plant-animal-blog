@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
+import { usePostsRefresh } from '@/contexts/PostsContext';
 
 interface Post {
   id: number;
@@ -43,6 +44,7 @@ export default function PostViewPage() {
   const params = useParams();
   const postId = params.id as string;
   const { showToast, ToastContainer } = useToast();
+  const { triggerRefresh } = usePostsRefresh();
 
   useEffect(() => {
     fetchUser();
@@ -122,6 +124,9 @@ export default function PostViewPage() {
         } : null);
         
         showToast(data.isLiked ? 'Post liked! ❤️' : 'Like removed', 'success');
+        
+        // Trigger refresh for sidebar and homepage
+        triggerRefresh();
       } else {
         // Revert on error
         fetchPost();
@@ -155,7 +160,6 @@ export default function PostViewPage() {
 
       if (res.ok) {
         setNewComment('');
-        // Immediately fetch updated comments
         await fetchComments();
         showToast('Comment posted successfully! 💬', 'success');
       } else {
@@ -172,7 +176,6 @@ export default function PostViewPage() {
   async function handleDeleteComment(commentId: number) {
     if (!confirm('Are you sure you want to delete this comment?')) return;
 
-    // Optimistically remove comment from UI
     const previousComments = [...comments];
     setComments(comments.filter(c => c.id !== commentId));
 
@@ -182,7 +185,6 @@ export default function PostViewPage() {
       });
 
       if (!res.ok) {
-        // Revert on error
         setComments(previousComments);
         showToast('Failed to delete comment', 'error');
       } else {
@@ -190,7 +192,6 @@ export default function PostViewPage() {
       }
     } catch (error) {
       console.error('Error deleting comment:', error);
-      // Revert on error
       setComments(previousComments);
       showToast('Error deleting comment', 'error');
     }
@@ -221,7 +222,7 @@ export default function PostViewPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <ToastContainer />
-      {/* Back Button */}
+      
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 transition-colors font-medium"
@@ -229,16 +230,12 @@ export default function PostViewPage() {
         <span>←</span> Back to all posts
       </Link>
 
-      {/* Post Content */}
       <article className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-green-200/50 shadow-sm">
-        {/* Header */}
         <div className="mb-8">
-          {/* Title */}
           <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-6 leading-tight">
             {post.title}
           </h1>
           
-          {/* Meta Info */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-green-600 pb-6 border-b border-green-100">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
@@ -270,7 +267,6 @@ export default function PostViewPage() {
             )}
           </div>
 
-          {/* Excerpt */}
           {post.excerpt && (
             <div className="mt-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
               <p className="text-lg text-green-800 italic">
@@ -280,14 +276,12 @@ export default function PostViewPage() {
           )}
         </div>
 
-        {/* Content */}
         <div className="prose prose-green max-w-none mb-8">
           <div className="text-green-900 text-lg leading-relaxed whitespace-pre-wrap">
             {post.content}
           </div>
         </div>
 
-        {/* Like Button */}
         <div className="flex items-center gap-4 pt-8 border-t border-green-100">
           <button
             onClick={handleLike}
@@ -309,7 +303,6 @@ export default function PostViewPage() {
           Comments ({comments.length})
         </h2>
 
-        {/* Add Comment Form */}
         {user ? (
           <form onSubmit={handleCommentSubmit} className="mb-8">
             <textarea
@@ -341,7 +334,6 @@ export default function PostViewPage() {
           </div>
         )}
 
-        {/* Comments List */}
         <div className="space-y-4">
           {comments.length === 0 ? (
             <div className="text-center py-12">

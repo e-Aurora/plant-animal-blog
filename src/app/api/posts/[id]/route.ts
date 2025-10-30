@@ -5,9 +5,10 @@ import { getSession } from '@/lib/auth';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const session = await getSession();
 
     if (!session) {
@@ -38,7 +39,10 @@ export async function DELETE(
       );
     }
 
-    // Delete associated likes first
+    // Delete associated comments first
+    db.prepare('DELETE FROM comments WHERE post_id = ?').run(postId);
+    
+    // Delete associated likes
     db.prepare('DELETE FROM likes WHERE post_id = ?').run(postId);
     
     // Delete the post
@@ -56,9 +60,10 @@ export async function DELETE(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const session = await getSession();
 
     if (!session) {

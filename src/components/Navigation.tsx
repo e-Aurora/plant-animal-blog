@@ -1,9 +1,12 @@
-// components/Navigation.tsx
+// src/components/Navigation.tsx
 'use client';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Button } from '@/components/ui/Button';
+import { Avatar } from '@/components/ui/Avatar';
 
 interface User {
   id: number;
@@ -15,6 +18,7 @@ export default function Navigation() {
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     fetchUser();
@@ -47,23 +51,34 @@ export default function Navigation() {
   }
 
   return (
-    <nav className="bg-white/80 backdrop-blur-sm border-b border-green-100 sticky top-0 z-50">
+    <nav className="bg-surface border-b border-default sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl">🌿</span>
-            <span className="text-xl font-semibold text-green-800">
-              Flora & Fauna
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2 group">
+            <span className="text-2xl transition-transform group-hover:scale-110"></span>
+            <span className="text-xl font-semibold text-primary">
+              Plants & Animals
             </span>
           </Link>
           
-          <div className="flex items-center space-x-6">
+          {/* Navigation Items */}
+          <div className="flex items-center space-x-4">
             <Link 
               href="/" 
-              className="text-green-700 hover:text-green-900 transition-colors font-medium"
+              className="text-secondary hover:text-primary transition-colors font-medium"
             >
               Home
             </Link>
+
+            {/* Theme Toggle 
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-surface-elevated transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>*/}
 
             {!loading && (
               <>
@@ -71,27 +86,29 @@ export default function Navigation() {
                   <>
                     <Link 
                       href="/blog/my-posts" 
-                      className="text-green-700 hover:text-green-900 transition-colors font-medium"
+                      className="hidden md:block text-secondary hover:text-primary transition-colors font-medium"
                     >
                       My Posts
                     </Link>
                     
-                    <Link
-                      href="/blog/create"
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    <Button
+                      onClick={() => router.push('/blog/create')}
+                      variant="primary"
+                      size="sm"
                     >
-                      Create Post
-                    </Link>
+                      + Create
+                    </Button>
                     
+                    {/* User Dropdown */}
                     <div className="relative">
                       <button
                         onClick={() => setShowDropdown(!showDropdown)}
-                        className="flex items-center space-x-2 text-green-700 hover:text-green-900 transition-colors"
+                        className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
                       >
-                        <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-semibold text-sm">
-                          {user.username.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="hidden md:inline font-medium">{user.username}</span>
+                        <Avatar name={user.username} size="sm" />
+                        <span className="hidden md:inline font-medium text-secondary">
+                          {user.username}
+                        </span>
                       </button>
 
                       {showDropdown && (
@@ -100,25 +117,25 @@ export default function Navigation() {
                             className="fixed inset-0 z-10" 
                             onClick={() => setShowDropdown(false)}
                           />
-                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-green-100 py-2 z-20">
+                          <div className="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-lg border border-default py-2 z-20">
                             <Link
                               href="/blog/my-posts"
-                              className="block px-4 py-2 text-green-700 hover:bg-green-50 font-medium"
+                              className="block px-4 py-2 text-secondary hover:bg-surface-elevated transition-colors md:hidden font-medium"
                               onClick={() => setShowDropdown(false)}
                             >
                               My Posts
                             </Link>
                             <Link
                               href="/settings"
-                              className="block px-4 py-2 text-green-700 hover:bg-green-50 font-medium"
+                              className="block px-4 py-2 text-secondary hover:bg-surface-elevated transition-colors font-medium"
                               onClick={() => setShowDropdown(false)}
                             >
                               Settings
                             </Link>
-                            <hr className="my-2 border-green-100" />
+                            <hr className="my-2 border-default" />
                             <button
                               onClick={handleLogout}
-                              className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-medium"
+                              className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium"
                             >
                               Logout
                             </button>
@@ -131,16 +148,17 @@ export default function Navigation() {
                   <>
                     <Link
                       href="/login"
-                      className="text-green-700 hover:text-green-900 transition-colors font-medium"
+                      className="text-secondary hover:text-primary transition-colors font-medium"
                     >
                       Sign In
                     </Link>
-                    <Link
-                      href="/register"
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    <Button
+                      onClick={() => router.push('/register')}
+                      variant="primary"
+                      size="sm"
                     >
                       Sign Up
-                    </Link>
+                    </Button>
                   </>
                 )}
               </>

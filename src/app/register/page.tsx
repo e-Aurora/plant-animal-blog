@@ -4,6 +4,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Alert';
+import { Card } from '@/components/ui/Card';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -44,7 +48,7 @@ export default function RegisterPage() {
         return;
       }
 
-      router.push('/blog');
+      router.push('/');
       router.refresh();
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -54,87 +58,89 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-beige-50 to-green-100">
-      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-8 border border-green-100 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-green-800 mb-6 text-center">
-          Sign Up
-        </h1>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
-            {error}
+    <div className="min-h-screen flex items-center justify-center bg-secondary -m-8 px-4">
+      <div className="w-full max-w-md">
+        <Card>
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="text-5xl mb-4">🌸</div>
+            <h1 className="text-3xl font-bold text-primary mb-2">
+              Join Our Community
+            </h1>
+            <p className="text-tertiary">
+              Start sharing your nature stories today
+            </p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-green-700 font-medium mb-2">
-              Username
-            </label>
-            <input
+          {/* Error Alert */}
+          {error && (
+            <Alert type="error" onClose={() => setError('')}>
+              {error}
+            </Alert>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
               type="text"
+              label="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="Choose a username"
               required
             />
-          </div>
 
-          <div>
-            <label className="block text-green-700 font-medium mb-2">
-              Email (optional)
-            </label>
-            <input
+            <Input
               type="email"
+              label="Email (optional)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="your@email.com"
             />
-          </div>
 
-          <div>
-            <label className="block text-green-700 font-medium mb-2">
-              Password
-            </label>
-            <input
+            <Input
               type="password"
+              label="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="At least 6 characters"
               required
               minLength={6}
             />
-          </div>
 
-          <div>
-            <label className="block text-green-700 font-medium mb-2">
-              Confirm Password
-            </label>
-            <input
+            <Input
               type="password"
+              label="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="Confirm your password"
               required
               minLength={6}
             />
+
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
+              isLoading={loading}
+            >
+              Create Account
+            </Button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-6 text-center">
+            <p className="text-tertiary">
+              Already have an account?{' '}
+              <Link 
+                href="/login" 
+                className="text-primary font-semibold hover:underline"
+              >
+                Sign In
+              </Link>
+            </p>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Creating account...' : 'Sign Up'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-green-600">
-          Already have an account?{' '}
-          <Link href="/login" className="text-green-700 font-semibold hover:text-green-900">
-            Sign In
-          </Link>
-        </p>
+        </Card>
       </div>
     </div>
   );

@@ -3,6 +3,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Alert';
+import { Card } from '@/components/ui/Card';
+import { usePostsRefresh } from '@/contexts/PostsContext';
 
 export default function CreatePostPage() {
   const [title, setTitle] = useState('');
@@ -12,6 +18,7 @@ export default function CreatePostPage() {
   const [loading, setLoading] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const router = useRouter();
+  const { triggerRefresh } = usePostsRefresh();
 
   useEffect(() => {
     checkAuth();
@@ -49,6 +56,7 @@ export default function CreatePostPage() {
         return;
       }
 
+      triggerRefresh();
       router.push(`/blog/${data.id}`);
       router.refresh();
     } catch (err) {
@@ -64,78 +72,70 @@ export default function CreatePostPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-8 border border-green-100">
-        <h1 className="text-3xl font-bold text-green-800 mb-6">
-          Create New Post
-        </h1>
+      <Card>
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-primary mb-2">
+            Create New Post
+          </h1>
+          <p className="text-tertiary">
+            Share your knowledge about plants and animals
+          </p>
+        </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
+          <Alert type="error" onClose={() => setError('')}>
             {error}
-          </div>
+          </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-green-700 font-medium mb-2">
-              Title
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
+          <Input
+            label="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Give your post a captivating title"
+            required
+          />
 
-          <div>
-            <label className="block text-green-700 font-medium mb-2">
-              Excerpt (Short Description)
-            </label>
-            <textarea
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              className="w-full px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              rows={2}
-              maxLength={200}
-            />
-            <p className="text-sm text-green-600 mt-1">
-              {excerpt.length}/200 characters
-            </p>
-          </div>
+          <Textarea
+            label="Excerpt (Short Description)"
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            placeholder="Write a brief summary of your post..."
+            rows={2}
+            maxLength={200}
+            characterCount={excerpt.length}
+            maxCharacters={200}
+          />
 
-          <div>
-            <label className="block text-green-700 font-medium mb-2">
-              Content
-            </label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              rows={15}
-              required
-            />
-          </div>
+          <Textarea
+            label="Content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Share your story, knowledge, or observations..."
+            rows={15}
+            required
+          />
 
-          <div className="flex gap-4">
-            <button
+          <div className="flex gap-4 pt-4">
+            <Button
               type="submit"
-              disabled={loading}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+              variant="primary"
+              isLoading={loading}
             >
-              {loading ? 'Creating...' : 'Create Post'}
-            </button>
-            <button
+              Publish Post
+            </Button>
+            <Button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+              variant="outline"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }
