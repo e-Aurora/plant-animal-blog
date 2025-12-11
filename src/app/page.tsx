@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Post } from '@/types/blog';
 import PostCard from '@/components/PostCard';
-import HeroSection from '@/components/HeroSection';
+
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import EmptyState from '@/components/EmptyState';
 import { usePostsRefresh } from '@/contexts/PostsContext';
@@ -42,7 +42,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8">
-      {/*<HeroSection />*/}
+      
 
       <div id="posts">
         <div className="flex items-center justify-between mb-6">
@@ -93,10 +93,10 @@ export default function HomePage() {
         {!loading && !error && posts.length === 0 && (
           <EmptyState
             title="No Posts Yet"
-            description="Be the first to share a story about the natural world!"
-            actionLabel="Create First Post"
+            description="Be the first one to share a story about plants & animals!"
+            actionLabel="Create the First Post"
             actionHref="/blog/create"
-            icon="🌱"
+            icon="✍️"
           />
         )}
       </div>
@@ -105,18 +105,14 @@ export default function HomePage() {
       {!loading && posts.length > 0 && (
         <div className="relative overflow-hidden rounded-2xl p-8 text-center">
           {/* Gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-pink-500 to-green-600 opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-300 via-green-400 to-pink-300 opacity-70"></div>
           
           {/* Content */}
           <div className="relative z-10 text-white">
             <h3 className="text-2xl font-bold mb-2">Have a Story to Share?</h3>
-            <p className="mb-6 opacity-90">
-              Join our community and share your knowledge about plants and animals
-            </p>
             <Button
               onClick={() => window.location.href = '/blog/create'}
-              variant="outline"
-              className="bg-white text-green-700 hover:bg-gray-100 border-white"
+              className="bg-white text-green-500 hover:bg-green-200 border-white"
             >
               Start Writing
             </Button>

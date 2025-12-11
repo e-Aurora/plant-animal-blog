@@ -93,7 +93,7 @@ export default function MyPostsPage() {
       {posts.length === 0 ? (
         <EmptyState
           title="No Posts Yet"
-          description="Start sharing your knowledge about plants and animals with the community!"
+          description="Create your first post to share your knowledge about plants and animals!"
           actionLabel="Create Your First Post"
           actionHref="/blog/create"
           icon="✍️"

@@ -14,7 +14,7 @@ export default function EmptyState({
   description,
   actionLabel,
   actionHref,
-  icon = '🌱'
+  icon = '✍️'
 }: EmptyStateProps) {
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-xl p-12 border border-green-200/50 text-center">

@@ -1,4 +1,4 @@
-// src/app/blog/create/page.tsx
+// src/app/blog/create/page.tsx (ENHANCED)
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,12 +8,14 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { Card } from '@/components/ui/Card';
+import TagInput from '@/components/TagInput';
 import { usePostsRefresh } from '@/contexts/PostsContext';
 
 export default function CreatePostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -46,7 +48,7 @@ export default function CreatePostPage() {
       const res = await fetch('/api/posts/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, excerpt }),
+        body: JSON.stringify({ title, content, excerpt, tags }),
       });
 
       const data = await res.json();
@@ -117,6 +119,16 @@ export default function CreatePostPage() {
             rows={15}
             required
           />
+
+          <div>
+            <label className="block text-sm font-medium text-secondary mb-2">
+              Tags (Optional)
+            </label>
+            <TagInput tags={tags} onChange={setTags} maxTags={5} />
+            <p className="text-xs text-muted mt-1">
+              Add tags to help others discover your post
+            </p>
+          </div>
 
           <div className="flex gap-4 pt-4">
             <Button

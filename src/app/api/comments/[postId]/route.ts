@@ -1,4 +1,4 @@
-// src/app/api/comments/[postId]/route.ts
+// src/app/api/comments/[postId]/route.ts (UPDATED POST method)
 import { NextResponse } from 'next/server';
 import db from '@/db/database';
 import { getSession } from '@/lib/auth';
@@ -9,6 +9,7 @@ export async function GET(
 ) {
   try {
     const params = await context.params;
+    const session = await getSession();
     const postId = parseInt(params.postId);
 
     const comments = db.prepare(`
@@ -18,12 +19,33 @@ export async function GET(
         c.user_id,
         c.content,
         c.created_at,
-        u.username
+        u.username,
+        u.avatar_emoji,
+        COUNT(cl.id) as likes
       FROM comments c
       LEFT JOIN users u ON c.user_id = u.id
+      LEFT JOIN comment_likes cl ON c.id = cl.comment_id
       WHERE c.post_id = ?
+      GROUP BY c.id
       ORDER BY c.created_at DESC
-    `).all(postId);
+    `).all(postId) as any[];
+
+    // Check which comments the current user has liked
+    if (session) {
+      const commentIds = comments.map(c => c.id);
+      if (commentIds.length > 0) {
+        const userLikes = db.prepare(`
+          SELECT comment_id 
+          FROM comment_likes 
+          WHERE user_id = ? AND comment_id IN (${commentIds.join(',')})
+        `).all(session.id) as Array<{ comment_id: number }>;
+
+        const likedSet = new Set(userLikes.map(l => l.comment_id));
+        comments.forEach(comment => {
+          comment.isLiked = likedSet.has(comment.id);
+        });
+      }
+    }
 
     return NextResponse.json(comments);
   } catch (error) {
@@ -60,9 +82,22 @@ export async function POST(
       );
     }
 
+    // Insert comment
     const result = db.prepare(
       'INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)'
     ).run(postId, session.id, content.trim());
+
+    // Get post owner
+    const post = db.prepare('SELECT user_id FROM posts WHERE id = ?')
+      .get(postId) as { user_id: number } | undefined;
+
+    // Create notification (only if not commenting on own post)
+    if (post && post.user_id !== session.id) {
+      db.prepare(`
+        INSERT INTO notifications (user_id, type, actor_id, post_id, comment_id) 
+        VALUES (?, 'comment', ?, ?, ?)
+      `).run(post.user_id, session.id, postId, result.lastInsertRowid);
+    }
 
     return NextResponse.json({
       id: result.lastInsertRowid,
