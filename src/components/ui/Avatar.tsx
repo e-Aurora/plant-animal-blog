@@ -1,32 +1,30 @@
-
 // src/components/ui/Avatar.tsx
 interface AvatarProps {
   name: string;
+  emoji?: string;
   size?: 'sm' | 'md' | 'lg';
-  src?: string;
+  className?: string;
 }
 
-export function Avatar({ name, size = 'md', src }: AvatarProps) {
+export function Avatar({ name, emoji, size = 'md', className = '' }: AvatarProps) {
   const sizeClasses = {
     sm: 'w-8 h-8 text-sm',
     md: 'w-10 h-10 text-base',
-    lg: 'w-12 h-12 text-lg'
+    lg: 'w-12 h-12 text-xl'
   };
 
-  const initial = name.charAt(0).toUpperCase();
-
-  if (src) {
+  if (emoji) {
     return (
-      <img 
-        src={src} 
-        alt={name}
-        className={`${sizeClasses[size]} rounded-full object-cover`}
-      />
+      <div className={`${sizeClasses[size]} bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center ${className}`}>
+        <span className="text-2xl">{emoji}</span>
+      </div>
     );
   }
 
+  const initial = name.charAt(0).toUpperCase();
+
   return (
-    <div className={`${sizeClasses[size]} bg-green-600 text-white rounded-full flex items-center justify-center font-semibold`}>
+    <div className={`${sizeClasses[size]} bg-green-600 text-white rounded-full flex items-center justify-center font-semibold ${className}`}>
       {initial}
     </div>
   );

@@ -1,12 +1,14 @@
-// src/app/api/posts/route.ts
+// src/app/api/profile/[username]/posts/route.ts
 import { NextResponse } from 'next/server';
 import db from '@/db/database';
 
-export async function GET(request: Request) {
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ username: string }> }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const limit = searchParams.get('limit') || '12';
-    const offset = searchParams.get('offset') || '0';
+    const params = await context.params;
+    const username = params.username;
 
     const posts = db.prepare(`
       SELECT 
@@ -16,20 +18,19 @@ export async function GET(request: Request) {
         p.content,
         p.excerpt,
         p.created_at,
-        u.avatar_emoji,
         u.username,
         COUNT(l.id) as likes
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       LEFT JOIN likes l ON p.id = l.post_id
+      WHERE u.username = ?
       GROUP BY p.id
       ORDER BY p.created_at DESC
-      LIMIT ? OFFSET ?
-    `).all(parseInt(limit), parseInt(offset));
+    `).all(username);
 
     return NextResponse.json(posts);
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error fetching user posts:', error);
     return NextResponse.json(
       { error: 'Failed to fetch posts' },
       { status: 500 }

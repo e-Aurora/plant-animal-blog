@@ -1,6 +1,4 @@
 // src/app/blog/edit/[id]/page.tsx
-// ============================================
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,12 +9,14 @@ import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import TagInput from '@/components/TagInput';
 import { usePostsRefresh } from '@/contexts/PostsContext';
 
 export default function EditPostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -38,20 +38,21 @@ export default function EditPostPage() {
         setTitle(post.title);
         setContent(post.content);
         setExcerpt(post.excerpt || '');
+        setTags(post.tags || []);
       } else if (res.status === 403) {
         setError('You do not have permission to edit this post');
-        setTimeout(() => router.push('/blog/my-posts'), 2000);
+        setTimeout(() => router.push('/'), 2000);
       } else if (res.status === 404) {
         setError('Post not found');
-        setTimeout(() => router.push('/blog/my-posts'), 2000);
+        setTimeout(() => router.push('/'), 2000);
       } else {
         setError('Failed to load post');
-        setTimeout(() => router.push('/blog/my-posts'), 2000);
+        setTimeout(() => router.push('/'), 2000);
       }
     } catch (err) {
       console.error('Error fetching post:', err);
       setError('Failed to load post');
-      setTimeout(() => router.push('/blog/my-posts'), 2000);
+      setTimeout(() => router.push('/'), 2000);
     } finally {
       setLoading(false);
     }
@@ -66,7 +67,7 @@ export default function EditPostPage() {
       const res = await fetch(`/api/posts/${postId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, excerpt }),
+        body: JSON.stringify({ title, content, excerpt, tags }),
       });
 
       const data = await res.json();
@@ -148,6 +149,16 @@ export default function EditPostPage() {
             rows={15}
             required
           />
+
+          <div>
+            <label className="block text-sm font-medium text-secondary mb-2">
+              Tags (Optional)
+            </label>
+            <TagInput tags={tags} onChange={setTags} maxTags={5} />
+            <p className="text-xs text-muted mt-1">
+              Update tags to help others discover your post
+            </p>
+          </div>
 
           <div className="flex gap-4 pt-4">
             <Button

@@ -18,6 +18,7 @@ export async function GET(
         p.content,
         p.excerpt,
         p.created_at,
+        u.avatar_emoji,
         u.username,
         COUNT(DISTINCT l.id) as likes
       FROM posts p

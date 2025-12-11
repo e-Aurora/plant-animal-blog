@@ -1,4 +1,4 @@
-// src/components/Navigation.tsx (FIXED - Normal search bar)
+// src/components/Navigation.tsx
 'use client';
 
 import Link from 'next/link';
@@ -25,12 +25,11 @@ export default function Navigation() {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      // Poll for notifications every 30 seconds
       const interval = setInterval(fetchUnreadCount, 30000);
       return () => clearInterval(interval);
     }
@@ -42,9 +41,13 @@ export default function Navigation() {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
+        console.log('Fetched user:', data.user);
+      } else {
+        setUser(null);
       }
     } catch (error) {
       console.error('Error fetching user:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -74,7 +77,6 @@ export default function Navigation() {
     }
   }
 
-  const isHomePage = pathname === '/';
 
   return (
     <nav className="bg-surface border-b border-default sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
@@ -84,39 +86,23 @@ export default function Navigation() {
           <Link href="/" className="flex items-center space-x-2 group flex-shrink-0">
             <span className="text-2xl transition-transform group-hover:scale-110">🌿</span>
             <span className="text-xl font-semibold text-primary hidden sm:inline">
-              Plants & Animals
+              Petals & Paws
             </span>
           </Link>
 
-          {/* Search Bar (on homepage only) */}
-          {isHomePage && (
+          {/* Search Bar */}
+          
             <div className="flex-1 max-w-2xl hidden md:block">
               <Search />
             </div>
-          )}
+         
           
           {/* Navigation Items */}
           <div className="flex items-center space-x-2 md:space-x-4 flex-shrink-0">
-            {!isHomePage && (
-              <Link 
-                href="/" 
-                className="text-secondary hover:text-primary transition-colors font-medium text-sm md:text-base"
-              >
-                Home
-              </Link>
-            )}
-
             {!loading && (
               <>
                 {user ? (
                   <>
-                    <Link 
-                      href="/blog/my-posts" 
-                      className="hidden md:block text-secondary hover:text-primary transition-colors font-medium"
-                    >
-                      My Posts
-                    </Link>
-                    
                     {/* Notifications Bell */}
                     <Link
                       href="/notifications"
@@ -171,14 +157,7 @@ export default function Navigation() {
                               className="block px-4 py-2 text-secondary hover:bg-surface-elevated transition-colors font-medium"
                               onClick={() => setShowDropdown(false)}
                             >
-                              My Profile
-                            </Link>
-                            <Link
-                              href="/blog/my-posts"
-                              className="block px-4 py-2 text-secondary hover:bg-surface-elevated transition-colors md:hidden font-medium"
-                              onClick={() => setShowDropdown(false)}
-                            >
-                              My Posts
+                              Profile
                             </Link>
                             <Link
                               href="/blog/create"
@@ -228,12 +207,12 @@ export default function Navigation() {
           </div>
         </div>
 
-        {/* Mobile Search (on homepage) */}
-        {isHomePage && (
+        {/* Mobile Search */}
+       
           <div className="md:hidden pb-4">
             <Search />
           </div>
-        )}
+      
       </div>
     </nav>
   );

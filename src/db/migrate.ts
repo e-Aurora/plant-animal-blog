@@ -10,27 +10,37 @@ const db = new Database(dbFile);
 function migrate() {
   console.log('🔄 Starting database migration...');
 
-  try {
-    // Add avatar_emoji column to users if it doesn't exist
-    try {
-      db.prepare('ALTER TABLE users ADD COLUMN avatar_emoji TEXT DEFAULT "🌿"').run();
-      console.log('✅ Added avatar_emoji column to users');
-    } catch (e: any) {
-      if (e.message.includes('duplicate column name')) {
-        console.log('ℹ️  avatar_emoji column already exists');
-      } else throw e;
-    }
-
     // Add created_at to users if it doesn't exist
-    try {
-      db.prepare('ALTER TABLE users ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP').run();
-      console.log('✅ Added created_at column to users');
-    } catch (e: any) {
-      if (e.message.includes('duplicate column name')) {
-        console.log('ℹ️  created_at column already exists');
-      } else throw e;
-    }
+    try{
+      db.prepare(`ALTER TABLE follows ADD COLUMN id INTEGER PRIMARY KEY`).run();
+      console.log("✅ Added id column to follows");
 
+      db.prepare(`UPDATE follows SET id = rowid WHERE id IS NULL`).run();
+      console.log("✅ Updated existing rows with unique ids");
+    } catch (e: any) {
+      if (e.message.includes("duplicate column name")) {
+        console.log("ℹ️ id column already exists in follows, skipping");
+      } else {
+        throw e;
+      }
+    /*try {
+  // 1️⃣ Önce sütunu ekle (default olmadan)
+  db.prepare(`ALTER TABLE users ADD COLUMN created_at DATETIME`).run();
+  console.log("✅ Added created_at column to users");
+
+  // 2️⃣ Mevcut kayıtları CURRENT_TIMESTAMP ile güncelle
+  db.prepare(`UPDATE users SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL`).run();
+  console.log("✅ Updated existing rows with current timestamp");
+
+} catch (e: any) {
+  // Eğer sütun zaten varsa, hata atlamasını sağla
+  if (e.message.includes("duplicate column name")) {
+    console.log("ℹ️ created_at column already exists, skipping");
+  } else {
+    throw e;
+  }
+}*/
+/*
     // Make email unique (recreate table if needed)
     const usersHasUniqueEmail = db.prepare(`
       SELECT sql FROM sqlite_master 
@@ -157,7 +167,7 @@ function migrate() {
   } catch (error) {
     console.error('❌ Migration failed:', error);
     throw error;
-  } finally {
+  }*/ finally {
     db.close();
   }
 }

@@ -14,10 +14,12 @@ export async function POST(
     if (!session) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-
+console.log("patatteesss");
     // Get target user ID
     const targetUser = db.prepare('SELECT id FROM users WHERE username = ?')
       .get(params.username) as { id: number } | undefined;
+
+    console.log(targetUser);
 
     if (!targetUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -29,7 +31,7 @@ export async function POST(
 
     // Check if already following
     const existing = db.prepare(
-      'SELECT id FROM follows WHERE follower_id = ? AND following_id = ?'
+      'SELECT follower_id FROM follows WHERE follower_id = ? AND following_id = ?'
     ).get(session.id, targetUser.id);
 
     if (existing) {

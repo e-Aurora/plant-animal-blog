@@ -8,7 +8,6 @@ import { Post } from '@/types/blog';
 import PostCard from '@/components/PostCard';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import { useToast } from '@/components/Toast';

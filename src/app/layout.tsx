@@ -5,6 +5,7 @@ import "./globals.css";
 import Navigation from '@/components/Navigation';
 import Sidebar from '@/components/Sidebar';
 import { PostsProvider } from '@/contexts/PostsContext';
+import Footer from "@/components/Footer";
 
 
 
@@ -40,6 +41,7 @@ export default function RootLayout({
             </div>
             
           </div>
+          <Footer />
         </PostsProvider>
       </body>
     </html>

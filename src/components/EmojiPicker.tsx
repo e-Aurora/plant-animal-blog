@@ -49,11 +49,11 @@ export default function EmojiPicker({ currentEmoji, onSelect, onClose }: EmojiPi
         </div>
 
         <div className="grid grid-cols-8 gap-2 max-h-80 overflow-y-auto p-2">
-          {AVATAR_EMOJIS.map((emoji) => (
+          {AVATAR_EMOJIS.map((emoji,num) => (
             <button
-              key={emoji}
+              key={num}
               onClick={() => handleSelect(emoji)}
-              className={`text-3xl p-2 rounded-lg transition-all hover:scale-110 ${
+              className={`text-3xl rounded-lg transition-all hover:scale-110 ${
                 selectedEmoji === emoji
                   ? 'bg-green-200 dark:bg-green-800 scale-110'
                   : 'hover:bg-green-100 dark:hover:bg-green-900'

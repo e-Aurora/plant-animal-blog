@@ -86,17 +86,16 @@ export default function Search() {
     <div ref={searchRef} className="relative w-full max-w-2xl">
       {/* Search Input */}
       <div className="relative">
+        
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => query.length >= 2 && setShowResults(true)}
-          placeholder="Search posts, users, or tags..."
+          onFocus={() => query.length >= 1 && setShowResults(true)}
+          placeholder="🔍 Search posts, users, or tags..."
           className="w-full pl-10 pr-4 py-2 input"
         />
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">
-          🔍
-        </span>
+        
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
@@ -104,26 +103,26 @@ export default function Search() {
         )}
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-2 mt-2">
-        {(['all', 'posts', 'users', 'tags'] as SearchType[]).map((type) => (
-          <button
-            key={type}
-            onClick={() => setSearchType(type)}
-            className={`px-3 py-1 text-sm rounded-lg transition-colors capitalize ${
-              searchType === type
-                ? 'bg-green-600 text-white'
-                : 'bg-surface-elevated text-tertiary hover:bg-green-100 dark:hover:bg-green-900'
-            }`}
-          >
-            {type}
-          </button>
-        ))}
-      </div>
-
       {/* Results Dropdown */}
       {showResults && query.length >= 2 && (
         <div className="absolute z-50 w-full mt-2 bg-surface border border-default rounded-lg shadow-lg max-h-96 overflow-y-auto">
+          {/* Filter Tabs - Inside Results */}
+          <div className="sticky top-0 bg-surface border-b border-default p-3 flex gap-2 z-10">
+            {(['all', 'posts', 'users', 'tags'] as SearchType[]).map((type) => (
+              <button
+                key={type}
+                onClick={() => setSearchType(type)}
+                className={`px-3 py-1 text-sm rounded-lg transition-colors capitalize ${
+                  searchType === type
+                    ? 'bg-green-600 text-white'
+                    : 'bg-surface-elevated text-tertiary hover:bg-green-100 dark:hover:bg-green-900'
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+
           {!hasResults && !loading && (
             <div className="p-8 text-center text-tertiary">
               No results found for "{query}"

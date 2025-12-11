@@ -9,4 +9,5 @@ export interface Post {
   created_at: string;
   likes: number;
   username?: string;
+  avatar_emoji?: string;
 }
