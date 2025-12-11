@@ -18,14 +18,27 @@ export async function GET(
         p.excerpt,
         p.created_at,
         u.username,
-        COUNT(l.id) as likes
+        u.avatar_emoji,
+        COUNT(DISTINCT l.id) as likes
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       LEFT JOIN likes l ON p.id = l.post_id
       WHERE u.username = ?
       GROUP BY p.id
       ORDER BY p.created_at DESC
-    `).all(params.username);
+    `).all(params.username) as any[];
+
+    // Get tags for each post
+    for (const post of posts) {
+      const tags = db.prepare(`
+        SELECT t.name
+        FROM tags t
+        INNER JOIN post_tags pt ON t.id = pt.tag_id
+        WHERE pt.post_id = ?
+      `).all(post.id) as Array<{ name: string }>;
+      
+      post.tags = tags.map(t => t.name);
+    }
 
     return NextResponse.json(posts);
   } catch (error) {

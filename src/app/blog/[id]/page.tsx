@@ -6,8 +6,10 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
 import { usePostsRefresh } from '@/contexts/PostsContext';
+import Post from '@/components/Post';
+import Comment from '@/components/Comment';
 
-interface Post {
+interface PostData {
   id: number;
   user_id: number;
   title: string;
@@ -15,17 +17,22 @@ interface Post {
   excerpt: string;
   created_at: string;
   username: string;
+  avatar_emoji: string;
   likes: number;
   isLiked: boolean;
+  tags?: string[];
 }
 
-interface Comment {
+interface CommentData {
   id: number;
   post_id: number;
   user_id: number;
   content: string;
   created_at: string;
   username: string;
+  avatar_emoji: string;
+  likes: number;
+  isLiked?: boolean;
 }
 
 interface User {
@@ -34,8 +41,8 @@ interface User {
 }
 
 export default function PostViewPage() {
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [post, setPost] = useState<PostData | null>(null);
+  const [comments, setComments] = useState<CommentData[]>([]);
   const [newComment, setNewComment] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -98,45 +105,57 @@ export default function PostViewPage() {
       return;
     }
 
-    // Optimistic update
     const wasLiked = post?.isLiked;
-    setPost(prev => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        likes: prev.isLiked ? prev.likes - 1 : prev.likes + 1,
-        isLiked: !prev.isLiked
-      };
-    });
+    setPost(prev => prev ? {
+      ...prev,
+      likes: prev.isLiked ? prev.likes - 1 : prev.likes + 1,
+      isLiked: !prev.isLiked
+    } : null);
 
     try {
-      const res = await fetch(`/api/posts/${postId}/like`, {
-        method: 'POST',
-      });
-
+      const res = await fetch(`/api/posts/${postId}/like`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
-        // Update with server response to ensure accuracy
-        setPost(prev => prev ? {
-          ...prev,
-          likes: data.likes,
-          isLiked: data.isLiked
-        } : null);
-        
+        setPost(prev => prev ? { ...prev, likes: data.likes, isLiked: data.isLiked } : null);
         showToast(data.isLiked ? 'Post liked! ❤️' : 'Like removed', 'success');
-        
-        // Trigger refresh for sidebar and homepage
         triggerRefresh();
       } else {
-        // Revert on error
         fetchPost();
         showToast('Failed to update like', 'error');
       }
     } catch (error) {
-      console.error('Error liking post:', error);
-      // Revert on error
       fetchPost();
       showToast('Error updating like', 'error');
+    }
+  }
+
+  async function handleCommentLike(commentId: number) {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+
+    setComments(prev => prev.map(c => 
+      c.id === commentId 
+        ? { ...c, likes: c.isLiked ? c.likes - 1 : c.likes + 1, isLiked: !c.isLiked }
+        : c
+    ));
+
+    try {
+      const res = await fetch(`/api/comments/${postId}/${commentId}/like`, { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setComments(prev => prev.map(c => 
+          c.id === commentId ? { ...c, likes: data.likes, isLiked: data.isLiked } : c
+        ));
+      } else {
+        fetchComments();
+      }
+    } catch (error) {
+      fetchComments();
     }
   }
 
@@ -146,11 +165,9 @@ export default function PostViewPage() {
       router.push('/login');
       return;
     }
-
     if (!newComment.trim()) return;
 
     setSubmitting(true);
-
     try {
       const res = await fetch(`/api/comments/${postId}`, {
         method: 'POST',
@@ -161,12 +178,11 @@ export default function PostViewPage() {
       if (res.ok) {
         setNewComment('');
         await fetchComments();
-        showToast('Comment posted successfully! 💬', 'success');
+        showToast('Comment posted! 💬', 'success');
       } else {
         showToast('Failed to post comment', 'error');
       }
     } catch (error) {
-      console.error('Error posting comment:', error);
       showToast('Error posting comment', 'error');
     } finally {
       setSubmitting(false);
@@ -174,25 +190,21 @@ export default function PostViewPage() {
   }
 
   async function handleDeleteComment(commentId: number) {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
+    if (!confirm('Delete this comment?')) return;
 
-    const previousComments = [...comments];
+    const prev = [...comments];
     setComments(comments.filter(c => c.id !== commentId));
 
     try {
-      const res = await fetch(`/api/comments/${postId}/${commentId}`, {
-        method: 'DELETE',
-      });
-
+      const res = await fetch(`/api/comments/${postId}/${commentId}`, { method: 'DELETE' });
       if (!res.ok) {
-        setComments(previousComments);
-        showToast('Failed to delete comment', 'error');
+        setComments(prev);
+        showToast('Failed to delete', 'error');
       } else {
         showToast('Comment deleted', 'success');
       }
     } catch (error) {
-      console.error('Error deleting comment:', error);
-      setComments(previousComments);
+      setComments(prev);
       showToast('Error deleting comment', 'error');
     }
   }
@@ -200,15 +212,12 @@ export default function PostViewPage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-green-200/50">
-          <div className="animate-pulse space-y-4">
-            <div className="h-10 bg-green-200 rounded w-3/4"></div>
-            <div className="h-4 bg-green-100 rounded w-1/4"></div>
-            <div className="space-y-3 pt-6">
-              <div className="h-4 bg-green-100 rounded"></div>
-              <div className="h-4 bg-green-100 rounded w-5/6"></div>
-              <div className="h-4 bg-green-100 rounded w-4/6"></div>
-            </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-green-200/50 animate-pulse">
+          <div className="h-10 bg-green-200 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-green-100 rounded w-1/4 mb-6"></div>
+          <div className="space-y-3">
+            <div className="h-4 bg-green-100 rounded"></div>
+            <div className="h-4 bg-green-100 rounded w-5/6"></div>
           </div>
         </div>
       </div>
@@ -217,85 +226,19 @@ export default function PostViewPage() {
 
   if (!post) return null;
 
-  const isOwner = user && post.user_id === user.id;
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <ToastContainer />
       
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 transition-colors font-medium"
-      >
+      <Link href="/" className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 transition-colors font-medium">
         <span>←</span> Back to all posts
       </Link>
 
-      <article className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-green-200/50 shadow-sm">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-6 leading-tight">
-            {post.title}
-          </h1>
-          
-          <div className="flex flex-wrap items-center gap-4 text-sm text-green-600 pb-6 border-b border-green-100">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold">
-                  {post.username.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <p className="font-semibold text-green-900">{post.username}</p>
-                <p className="text-xs text-green-500">
-                  {new Date(post.created_at).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </p>
-              </div>
-            </div>
-
-            {isOwner && (
-              <div className="ml-auto flex gap-2">
-                <Link
-                  href={`/blog/edit/${post.id}`}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  Edit Post
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {post.excerpt && (
-            <div className="mt-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
-              <p className="text-lg text-green-800 italic">
-                {post.excerpt}
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="prose prose-green max-w-none mb-8">
-          <div className="text-green-900 text-lg leading-relaxed whitespace-pre-wrap">
-            {post.content}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 pt-8 border-t border-green-100">
-          <button
-            onClick={handleLike}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
-              post.isLiked
-                ? 'bg-red-100 text-red-700 hover:bg-red-200 shadow-md'
-                : 'bg-green-100 text-green-700 hover:bg-green-200'
-            }`}
-          >
-            <span className="text-2xl">{post.isLiked ? '❤️' : '🤍'}</span>
-            <span className="font-semibold">{post.likes}</span>
-          </button>
-        </div>
-      </article>
+      <Post 
+        post={post} 
+        isOwner={user?.id === post.user_id}
+        onLike={handleLike}
+      />
 
       {/* Comments Section */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-green-200/50 shadow-sm">
@@ -309,7 +252,7 @@ export default function PostViewPage() {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Share your thoughts..."
-              className="w-full px-4 py-3 border border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none bg-white"
+              className="w-full px-4 py-3 border border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 resize-none bg-white"
               rows={4}
               required
             />
@@ -317,7 +260,7 @@ export default function PostViewPage() {
               <button
                 type="submit"
                 disabled={submitting || !newComment.trim()}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 font-medium"
               >
                 {submitting ? 'Posting...' : 'Post Comment'}
               </button>
@@ -326,10 +269,7 @@ export default function PostViewPage() {
         ) : (
           <div className="mb-8 p-6 bg-green-50 border border-green-200 rounded-xl text-center">
             <p className="text-green-700">
-              <Link href="/login" className="font-semibold hover:underline text-green-800">
-                Sign in
-              </Link>{' '}
-              to join the conversation
+              <Link href="/login" className="font-semibold hover:underline">Sign in</Link> to comment
             </p>
           </div>
         )}
@@ -338,51 +278,17 @@ export default function PostViewPage() {
           {comments.length === 0 ? (
             <div className="text-center py-12">
               <span className="text-6xl mb-4 block">💬</span>
-              <p className="text-green-600">
-                No comments yet. Be the first to share your thoughts!
-              </p>
+              <p className="text-green-600">No comments yet. Be the first!</p>
             </div>
           ) : (
             comments.map((comment) => (
-              <div
+              <Comment
                 key={comment.id}
-                className="bg-green-50/50 rounded-xl p-5 border border-green-100 hover:border-green-200 transition-colors"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-semibold flex-shrink-0">
-                      {comment.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-green-900">
-                        {comment.username}
-                      </p>
-                      <p className="text-xs text-green-500">
-                        {new Date(comment.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  {user && comment.user_id === user.id && (
-                    <button
-                      onClick={() => handleDeleteComment(comment.id)}
-                      className="text-red-600 hover:text-red-800 text-sm font-medium"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-
-                <p className="text-green-800 whitespace-pre-wrap leading-relaxed pl-13">
-                  {comment.content}
-                </p>
-              </div>
+                comment={comment}
+                currentUserId={user?.id}
+                onDelete={handleDeleteComment}
+                onLike={handleCommentLike}
+              />
             ))
           )}
         </div>

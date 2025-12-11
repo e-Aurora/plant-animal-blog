@@ -1,4 +1,3 @@
-
 // src/types/blog.ts
 export interface Post {
   id: number;
@@ -10,4 +9,5 @@ export interface Post {
   likes: number;
   username?: string;
   avatar_emoji?: string;
+  tags?: string[];
 }

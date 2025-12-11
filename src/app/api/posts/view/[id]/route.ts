@@ -21,6 +21,7 @@ export async function GET(
         p.excerpt,
         p.created_at,
         u.username,
+        u.avatar_emoji,
         COUNT(DISTINCT l.id) as likes
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
@@ -36,7 +37,17 @@ export async function GET(
       );
     }
 
-    // Check if current user has liked this post
+    // Get tags
+    const tags = db.prepare(`
+      SELECT t.name
+      FROM tags t
+      INNER JOIN post_tags pt ON t.id = pt.tag_id
+      WHERE pt.post_id = ?
+    `).all(postId) as Array<{ name: string }>;
+
+    post.tags = tags.map(t => t.name);
+
+    // Check if liked
     let isLiked = false;
     if (session) {
       const like = db.prepare(

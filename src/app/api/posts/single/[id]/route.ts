@@ -12,7 +12,6 @@ export async function GET(
     const session = await getSession();
     const postId = parseInt(params.id);
 
-    // First check if post exists
     const post = db.prepare(`
       SELECT 
         p.id,
@@ -25,7 +24,7 @@ export async function GET(
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       WHERE p.id = ?
-    `).get(postId);
+    `).get(postId) as any;
 
     if (!post) {
       return NextResponse.json(
@@ -34,7 +33,6 @@ export async function GET(
       );
     }
 
-    // Check if user is authenticated
     if (!session) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -42,14 +40,22 @@ export async function GET(
       );
     }
 
-    // Check if user owns the post
-    const postData = post as any;
-    if (postData.user_id !== session.id) {
+    if (post.user_id !== session.id) {
       return NextResponse.json(
         { error: 'You do not have permission to edit this post' },
         { status: 403 }
       );
     }
+
+    // Get tags
+    const tags = db.prepare(`
+      SELECT t.name
+      FROM tags t
+      INNER JOIN post_tags pt ON t.id = pt.tag_id
+      WHERE pt.post_id = ?
+    `).all(postId) as Array<{ name: string }>;
+
+    post.tags = tags.map(t => t.name);
 
     return NextResponse.json(post);
   } catch (error) {
