@@ -1,4 +1,4 @@
-// src/app/api/posts/[id]/like/route.ts
+// src/app/api/posts/[id]/like/route.ts (UPDATED)
 import { NextResponse } from 'next/server';
 import db from '@/db/database';
 import { getSession } from '@/lib/auth';
@@ -31,12 +31,32 @@ export async function POST(
         postId,
         session.id
       );
+      
+      // Delete notification if exists
+      db.prepare(`
+        DELETE FROM notifications 
+        WHERE type = 'post_like' 
+        AND post_id = ? 
+        AND actor_id = ?
+      `).run(postId, session.id);
     } else {
       // Like
       db.prepare('INSERT INTO likes (post_id, user_id) VALUES (?, ?)').run(
         postId,
         session.id
       );
+
+      // Get post owner
+      const post = db.prepare('SELECT user_id FROM posts WHERE id = ?')
+        .get(postId) as { user_id: number } | undefined;
+
+      // Create notification (only if not liking own post)
+      if (post && post.user_id !== session.id) {
+        db.prepare(`
+          INSERT INTO notifications (user_id, type, actor_id, post_id) 
+          VALUES (?, 'post_like', ?, ?)
+        `).run(post.user_id, session.id, postId);
+      }
     }
 
     // Get updated like count
