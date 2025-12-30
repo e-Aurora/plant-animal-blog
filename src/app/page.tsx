@@ -105,7 +105,7 @@ export default function HomePage() {
       {!loading && posts.length > 0 && (
         <div className="relative overflow-hidden rounded-2xl p-8 text-center">
           {/* Gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-300 via-green-400 to-pink-300 opacity-70"></div>
+          <div className="absolute inset-0 pink-green-gradient opacity-70"></div>
           
           {/* Content */}
           <div className="relative z-10 text-white">

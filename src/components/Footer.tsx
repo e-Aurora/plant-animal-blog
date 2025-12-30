@@ -1,5 +1,7 @@
 // src/components/Footer.tsx
 import Link from 'next/link';
+import Logo from './Logo';
+import LogoText from './LogoText';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -11,10 +13,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <span className="text-2xl">🌿</span>
-              <span className="text-xl font-semibold text-primary">
-                Petals & Paws
-              </span>
+              <LogoText className="w-50 h-12 inline-block" />
+              
             </div>
             <p className="text-tertiary text-sm mb-4">
               A community platform for nature lovers to share stories, 
@@ -53,7 +53,7 @@ export default function Footer() {
         <div className="pt-8 border-t border-default">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-tertiary">
-              © {currentYear} Plants & Animals. Made with 💚 for nature lovers.
+              © {currentYear} Petals & Paws. Made with 💚 for nature lovers.
             </p>
             
           </div>

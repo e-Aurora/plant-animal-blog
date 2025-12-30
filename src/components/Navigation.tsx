@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import Search from '@/components/Search';
+import Logo from './Logo';
+import LogoText from './LogoText';
 
 interface User {
   id: number;
@@ -81,13 +83,11 @@ export default function Navigation() {
   return (
     <nav className="bg-surface border-b border-default sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-4">
+        <div className="flex justify-between items-center h-28 gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group flex-shrink-0">
-            <span className="text-2xl transition-transform group-hover:scale-110">🌿</span>
-            <span className="text-xl font-semibold text-primary hidden sm:inline">
-              Petals & Paws
-            </span>
+          <Link href="/" className="flex flex-row items-center space-x-0 group flex-shrink-0">
+              <Logo className="w-auto h-20" />
+              <LogoText className="w-auto h-9" />
           </Link>
 
           {/* Search Bar */}

@@ -4,6 +4,7 @@
 @tailwind utilities;
 
 
+
 /* ============================================
    THEME SYSTEM - Light & Dark Mode
    ============================================ */
@@ -287,3 +288,17 @@ body {
     transition: none !important;
   }
 }
+
+@layer components {
+  .pink-green-gradient {
+    background: hsla(311, 100%, 86%, 1);
+
+background: linear-gradient(0deg, hsla(311, 100%, 86%, 1) 0%, hsla(111, 100%, 91%, 1) 27%, hsla(140, 90%, 71%, 1) 50%, hsla(111, 100%, 91%, 1) 75%, hsla(311, 100%, 89%, 1) 100%);
+
+background: -moz-linear-gradient(0deg, hsla(311, 100%, 86%, 1) 0%, hsla(111, 100%, 91%, 1) 27%, hsla(140, 90%, 71%, 1) 50%, hsla(111, 100%, 91%, 1) 75%, hsla(311, 100%, 89%, 1) 100%);
+
+background: -webkit-linear-gradient(0deg, hsla(311, 100%, 86%, 1) 0%, hsla(111, 100%, 91%, 1) 27%, hsla(140, 90%, 71%, 1) 50%, hsla(111, 100%, 91%, 1) 75%, hsla(311, 100%, 89%, 1) 100%);
+
+filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFB9F2", endColorstr="#D8FFD1", GradientType=1 );
+  }
+};

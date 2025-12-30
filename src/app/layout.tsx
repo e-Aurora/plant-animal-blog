@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 
 
 export const metadata: Metadata = {
-  title: "Flora & Fauna - Nature Blog",
+  title: "Petals & Paws - Nature Blog",
   description: "Share and discover stories about plants and animals",
 };
 

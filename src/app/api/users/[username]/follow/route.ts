@@ -14,12 +14,9 @@ export async function POST(
     if (!session) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-console.log("patatteesss");
     // Get target user ID
     const targetUser = db.prepare('SELECT id FROM users WHERE username = ?')
       .get(params.username) as { id: number } | undefined;
-
-    console.log(targetUser);
 
     if (!targetUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });

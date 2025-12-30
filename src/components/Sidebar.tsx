@@ -61,42 +61,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-80 space-y-6 hidden lg:block">
-      {/* Recent Posts */}
-      <Card>
-        <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          
-          Recent Posts
-        </h2>
-        <div className="space-y-4">
-          {recentPosts.map((post) => (
-            <Link
-              key={post.id}
-              href={`/blog/${post.id}`}
-              className="block group"
-            >
-              <h3 className="text-sm font-medium text-secondary group-hover:text-primary transition-colors line-clamp-2">
-                {post.title}
-              </h3>
-              <p className="text-xs text-tertiary mt-1 line-clamp-2">
-                {post.excerpt}
-              </p>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-muted">
-                  {new Date(post.created_at).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
-                <Badge variant="secondary" size="sm">
-                  ❤️ {post.likes}
-                </Badge>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </Card>
-
-      {/* Hot Posts */}
+       {/* Hot Posts */}
       <Card className="relative overflow-hidden">
         {/* Pink accent */}
         <div className="absolute top-0 right-0 w-20 h-20 bg-pink-200 rounded-full opacity-20 blur-2xl"></div>
@@ -141,6 +106,42 @@ export default function Sidebar() {
         </div>
       </Card>
 
+      {/* Recent Posts */}
+      <Card>
+        <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+          
+          Recent Posts
+        </h2>
+        <div className="space-y-4">
+          {recentPosts.map((post) => (
+            <Link
+              key={post.id}
+              href={`/blog/${post.id}`}
+              className="block group"
+            >
+              <h3 className="text-sm font-medium text-secondary group-hover:text-primary transition-colors line-clamp-2">
+                {post.title}
+              </h3>
+              <p className="text-xs text-tertiary mt-1 line-clamp-2">
+                {post.excerpt}
+              </p>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-muted">
+                  {new Date(post.created_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+                <Badge variant="secondary" size="sm">
+                  ❤️ {post.likes}
+                </Badge>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </Card>
+
+     
       
     </aside>
   );

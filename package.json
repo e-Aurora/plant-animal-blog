@@ -1,5 +1,5 @@
 {
-  "name": "flora-fauna-blog",
+  "name": "petals-paws-blog",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -19,6 +19,7 @@
     "react-dom": "^18.3.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.9",
